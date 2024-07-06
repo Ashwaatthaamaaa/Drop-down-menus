@@ -1,5 +1,4 @@
 const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = (env, argv) => {
@@ -9,24 +8,20 @@ module.exports = (env, argv) => {
     mode: isProduction ? 'production' : 'development',
     entry: './src/index.js',
     output: {
-      filename: isProduction ? '[name].[contenthash].js' : 'main.js',
+      filename: 'main.js',
       path: path.resolve(__dirname, 'dist'),
       clean: true,
-      assetModuleFilename: (pathData) => {
-        const filepath = path.dirname(pathData.filename).split('/').slice(1).join('/');
-        return `${filepath}/[name].[hash][ext][query]`;
-      },    },
+      library: {
+        name: 'SampleLibrary',
+        type: 'umd',
+      },
+    },
     devtool: isProduction ? 'source-map' : 'inline-source-map',
     devServer: {
       static: './dist',
       hot: true,
     },
     plugins: [
-      new HtmlWebpackPlugin({
-        title: 'Project Template',
-        template: './src/index.html',
-        inject: 'body',
-      }),
       new MiniCssExtractPlugin({
         filename: isProduction ? '[name].[contenthash].css' : '[name].css',
       }),
@@ -36,7 +31,7 @@ module.exports = (env, argv) => {
         {
           test: /\.css$/,
           use: [
-            isProduction ? MiniCssExtractPlugin.loader : 'style-loader',
+            'style-loader',
             'css-loader',
           ],
         },
@@ -66,10 +61,3 @@ module.exports = (env, argv) => {
     },
   };
 };
-
-
-
-// Run a development server with npm run dev
-// Build for development with npm run build:dev
-// Build for production with npm run build
-// Deploy to GitHub Pages with npm run deploy
